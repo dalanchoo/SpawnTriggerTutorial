@@ -281,7 +281,7 @@ In this tutorial, you’ll build a simple enemy spawning system in Unity. When t
 
 ## Create the spawn trigger
 
-The spawn trigger is an invisible box. When the player walks into it, it spawns enemies at a set of spawn points, keeping no more than a set number alive at once until it has spawned its total.
+The spawn trigger is a box marked by a see-through orange visual. When the player walks into it, the box disappears and enemies spawn at a set of spawn points, keeping no more than a set number alive at once until the trigger has spawned its total.
 
 1. **Create the SpawnGroupTrigger script**
 
@@ -430,7 +430,7 @@ The spawn trigger is an invisible box. When the player walks into it, it spawns 
 
 2. **Create the trigger in the scene**
 
-    1. Go to **GameObject > Create Empty** and rename it `SpawnTrigger1`.
+    1. Go to **GameObject > Create Empty** and rename it `SpawnTrigger1`. The number makes it easy to add more triggers later, like `SpawnTrigger2` further along the path.
     2. Click **Add Component** and choose `SpawnGroupTrigger`. Unity adds a **Box Collider** with **Is Trigger** already checked.
     3. Set the Box Collider's **Center** to **(0, 1, 0)** and its **Size** to **(6, 2, 1)**. This makes a box 6 meters wide and 2 meters tall that sits on the floor.
     4. Set its **Position** to **(0, 0, 5)**, 5 meters in front of the player.
@@ -458,7 +458,7 @@ The spawn trigger is an invisible box. When the player walks into it, it spawns 
 
     The **Y** position of each is **1** because the capsule is 2 meters tall and spawns centered on the point, so a height of 1 puts it on the floor.
 
-    Use at least as many spawn points as **Max Alive**. Each point holds one enemy at a time, so with fewer points, fewer enemies can be alive at once.
+    This tutorial uses three spawn points because **Max Alive** is set to 3 in the next step. Each point holds one enemy at a time, so you need at least as many spawn points as **Max Alive**. With fewer points, fewer enemies can be alive at once.
 
 4. **Connect the settings**
 
