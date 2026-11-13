@@ -1,6 +1,6 @@
 # Spawn Trigger Tutorial
 
-In this tutorial, you’ll build a simple enemy spawning system in Unity. When the player enters a trigger, enemies appear at designated spawn points. The player can remove them by touching them, and the trigger keeps spawning enemies until it reaches a specified total.
+This tutorial teaches you how to build a simple enemy spawning system in Unity. Enemies spawn when the player walks into a trigger. They spawn at spawn points you designate. The enemies disappear when the player touches them. The trigger keeps spawning enemies until it has spawned the total amount specified.
 
 ![What you will build in this tutorial](Images/42-Play.gif)
 
@@ -217,7 +217,7 @@ In this tutorial, you’ll build a simple enemy spawning system in Unity. When t
 
 5. **Turn it into a prefab**
 
-    A prefab is a reusable template saved in your project. The spawner will create copies of it at runtime, so the enemy in the scene is no longer needed once the prefab exists.
+    A prefab is a reusable template saved in your project. You can create one by dragging a GameObject into the Project window. You will assign this prefab to the spawner so it knows what to create when the player touches the trigger. You no longer need the `Enemy` in the Hierarchy window. It was just used to create the prefab, so you can delete it.
 
     1. Drag `Enemy` from the Hierarchy into the `SpawnTutorial/Prefabs` folder in the Project window.
 
@@ -236,7 +236,7 @@ In this tutorial, you’ll build a simple enemy spawning system in Unity. When t
 
 7. **Create the Enemy script**
 
-    The enemy removes itself when the player touches it. Keeping this logic on the enemy means you don't have to modify the Starter Assets player.
+    The enemy removes itself when the player touches it.
 
     1. In `SpawnTutorial/Scripts`, right-click and choose **Create > Scripting > MonoBehaviour Script**. Name it `Enemy`.
 
@@ -266,8 +266,8 @@ In this tutorial, you’ll build a simple enemy spawning system in Unity. When t
     **How it works:**
 
     - Unity calls `OnTriggerEnter` when another collider enters the enemy's trigger. The player's Character Controller counts as a collider, so no Rigidbody is needed.
-    - `CompareTag("Player")` checks whether the object that entered is the player. It's faster than comparing `other.tag == "Player"`.
-    - `Destroy(gameObject)` removes the whole enemy. Writing `Destroy(this)` instead would remove only the script and leave the capsule in the scene.
+    - `CompareTag("Player")` is a way to check whether the object is the player. It's faster than `other.tag == "Player"`.
+    - `Destroy(gameObject)` deletes the enemy entirely. If you wrote `Destroy(this)` instead, you would only remove the script, and the capsule would be left in the scene.
 
 8. **Test the enemy**
 
@@ -281,7 +281,7 @@ In this tutorial, you’ll build a simple enemy spawning system in Unity. When t
 
 ## Create the spawn trigger
 
-The spawn trigger is a box marked by a see-through orange visual. When the player walks into it, the box disappears and enemies spawn at a set of spawn points, keeping no more than a set number alive at once until the trigger has spawned its total.
+The spawn trigger is a box that starts spawning enemies when the player touches it. It's transparent orange until the player activates it, at which point it disappears. Enemies spawn at spawn points that are assigned to the trigger. The trigger spawns a tunable number of enemies, ensuring only a set number are alive at once.
 
 1. **Create the SpawnGroupTrigger script**
 
@@ -418,15 +418,15 @@ The spawn trigger is a box marked by a see-through orange visual. When the playe
 
     **How it works:**
 
-    - **Settings:** `[SerializeField]` makes each private field editable in the Inspector. `[Min(1)]` stops the Inspector from accepting zero or negative counts.
-    - **`Reset`:** Unity calls this when the component is first added. It checks **Is Trigger** on the Box Collider for you, and `[RequireComponent]` makes sure the Box Collider exists.
-    - **`OnTriggerEnter`:** starts spawning when the player enters. It ignores everything that isn't tagged **Player**, ignores the player while a wave is already spawning, and fires only once when **Disable After Use** is checked. It also invokes `onTriggered`, so you can hook up extra actions in the Inspector without writing code. You’ll use it to hide the trigger’s visual box.
-    - **`Update`:** the core of the system. Each frame, it removes enemies the player has destroyed from the list. In Unity, a destroyed object compares equal to `null`. Then it spawns new enemies until either **Max Alive** enemies are alive or **Total To Spawn** have been spawned.
-    - **`FindFreeSpawnPoint`:** picks a spawn point that has no enemy on it and is at least **Min Distance From Player** away. Without this check, a new enemy could spawn on top of another enemy, or right inside the player, where it would be touched and removed instantly. If no point qualifies, spawning waits until one frees up.
-    - **`SpawnEnemy`:** creates an enemy at the chosen point and adds it to the list.
-    - **`OnDrawGizmos`:** draws the trigger box in orange and the spawn points as red spheres. Gizmos appear only in the Scene view, so they help you place things while editing. The `TriggerVisual` cube you add next shows the trigger in the game.
+    - **Settings:** `[SerializeField]` makes a private field editable in the Inspector. `[Min(1)]` prevents the Inspector from accepting zero or negative counts.
+    - **`Reset`:** is called when you add the component in the editor. It enables **Is Trigger** on the Box Collider, and `[RequireComponent]` ensures the Box Collider exists.
+    - **`OnTriggerEnter`:** is called when something enters and, if conditions are met, starts spawning enemies. It ignores everything not tagged **Player** and ignores the player when a wave is already spawning. It fires only once if **Disable After Use** is checked. It also invokes `onTriggered`, so you can add actions in the Inspector without writing code. You’ll use it to turn off the trigger’s visual.
+    - **`Update`:** is called every frame. It removes enemies the player has destroyed from its list of alive enemies. In Unity, a destroyed object equals `null`. Then it spawns new enemies until either **Max Alive** enemies are alive or **Total To Spawn** have been spawned.
+    - **`FindFreeSpawnPoint`:** picks a spawn point without an enemy on it that is at least **Min Distance From Player** away from the player. Without this check, an enemy could spawn on top of another enemy or inside the player, where it would be touched and removed instantly. If no point qualifies, spawning waits until one frees up.
+    - **`SpawnEnemy`:** spawns an enemy at the chosen point and adds it to the list.
+    - **`OnDrawGizmos`:** draws the trigger as an orange wireframe box and the spawn points as red spheres. Gizmos only appear in the Scene view. The `TriggerVisual` cube you add next shows the trigger in the game.
 
-    Because the spawner tracks its own enemies, the `Enemy` script doesn't need to know the spawner exists.
+    Because the spawner keeps track of its own enemies, the `Enemy` script doesn't need to know the spawner exists.
 
 2. **Create the trigger in the scene**
 
@@ -501,13 +501,11 @@ If the trigger or enemies don't behave as expected, check the following:
 
 ## Next steps
 
-You now have a working spawn trigger that controls how many enemies spawn, how many are alive at once, and where they appear. Here are some ways to build on it:
+You now have a very basic trigger that spawns enemies. You control where they appear, how many appear at once, and how many appear in total. If you want to expand upon this example, here are some ideas:
 
-- **Make enemies chase the player.** Bake a NavMesh for the floor and add a NavMesh Agent to the `Enemy` prefab, then set its destination to the player's position each frame.
-- **Chain triggers together.** Place a second `SpawnGroupTrigger` further along the path. Its spawn points and settings are independent, so each area of a level can have its own wave.
-- **Open a door when a wave is cleared.** Add an `onWaveCleared` UnityEvent that fires when every enemy has spawned and been defeated. Then connect it to a door in the Inspector, the same way you connected `TriggerVisual` to `onTriggered`.
-- **Track kills across triggers.** Let each trigger add to, or reset, a required kill count, so the level only progresses once the player has defeated enough enemies.
-- **Scale for multiplayer.** Increase **Total To Spawn** and **Max Alive** based on the number of players, so a group faces a bigger wave than a single player.
-- **Reuse enemies instead of destroying them.** For larger waves, an object pool avoids the cost of creating and destroying objects during play.
+- Have the enemies chase the player. You can bake a NavMesh for the floor and add a NavMesh Agent to the `Enemy` prefab. Set the enemy's destination to the player's position each frame.
+- Have multiple `SpawnGroupTrigger` objects in the level. Later ones can become active only when the player kills all enemies from earlier ones.
+- Have the enemies shoot simple projectiles at the player.
+- Give the enemies bodies like the player’s instead of simple capsules.
 
 You can download the [complete project on GitHub](https://github.com/dalanchoo/spawntriggertutorial).
